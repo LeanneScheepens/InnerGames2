@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tweekracht_sociality/firebase_options.dart';
-import 'firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
- 
 // Import ONLY the screens we created that work
-import 'screens/welcome_screen.dart';
 import 'screens/welcome_screenV2.dart';
 import 'screens/home_screenV2.dart';
 import 'screens/splash_screen.dart';
@@ -213,6 +210,7 @@ class SocialityApp extends StatelessWidget {
           case '/story':
             return MaterialPageRoute(
               builder: (context) => const StoryScreen(),
+              settings: settings,
             );
 
           case '/avatar-selection':
@@ -224,6 +222,7 @@ class SocialityApp extends StatelessWidget {
           case '/game':
             return MaterialPageRoute(
               builder: (context) => const StoryScreen(),
+              settings: settings,
             );
 
           case '/game-placeholder':
