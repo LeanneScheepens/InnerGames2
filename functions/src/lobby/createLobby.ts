@@ -106,6 +106,7 @@ export const createLobby2 = onCall(
         maxPlayers: 6,
         playerCount: 1,
         allReady: false,
+        currentScenarioId: null,
         createdAt: FieldValue.serverTimestamp(),
         startedAt: null,
       });
