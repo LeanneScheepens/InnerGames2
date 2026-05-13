@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tweekracht_sociality/firebase_options.dart';
-import 'firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:provider/provider.dart';
  
 // Import ONLY the screens we created that work
 import 'screens/Choosing_story.dart';
@@ -19,9 +19,9 @@ import 'screens/share_game_screen.dart';
 import 'screens/story_screen.dart';
 import 'screens/avatar_selection_screen.dart';
 import 'screens/settings_screen.dart';
-import 'screens/Choosing_story.dart';
 import 'screens/lobby_player_screen.dart' as lobby_player;
 
+import 'providers/app_settings_provider.dart';
 import 'services/auth_service.dart';
 
 //test2
@@ -41,22 +41,36 @@ class SocialityApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Sociality',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.pink,
-        fontFamily: 'SF Pro Text',
-      ),
-      initialRoute: '/splash',
-      onGenerateRoute: (settings) {
-        print('🔄 Navigating to: ${settings.name}');
+    return ChangeNotifierProvider(
+      create: (_) => AppSettingsProvider(),
+      child: Consumer<AppSettingsProvider>(
+        builder: (context, appSettings, _) {
+          return MaterialApp(
+            title: 'Sociality',
+            debugShowCheckedModeBanner: false,
+            theme: ThemeData(
+              primarySwatch: Colors.pink,
+              fontFamily: 'SF Pro Text',
+            ),
+            builder: (context, child) {
+              final mediaQuery = MediaQuery.of(context);
+
+              return MediaQuery(
+                data: mediaQuery.copyWith(
+                  textScaler: TextScaler.linear(appSettings.textScale),
+                ),
+                child: child ?? const SizedBox.shrink(),
+              );
+            },
+            initialRoute: '/splash',
+            onGenerateRoute: (settings) {
+              print('🔄 Navigating to: ${settings.name}');
         
-        switch (settings.name) {
-          case '/':
-            return MaterialPageRoute(
-              builder: (context) => const HomeScreenv2(),
-            );
+              switch (settings.name) {
+                case '/':
+                  return MaterialPageRoute(
+                    builder: (context) => const HomeScreenv2(),
+                  );
 
           case '/splash':
             return MaterialPageRoute(
@@ -259,39 +273,42 @@ class SocialityApp extends StatelessWidget {
             );
             
             
-          default:
-            print('❌ Route not found: ${settings.name}');
-            return MaterialPageRoute(
-              builder: (context) => Scaffold(
-                appBar: AppBar(
-                  title: const Text('Not Found'),
-                  backgroundColor: Colors.white,
-                ),
-                body: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.error_outline, size: 64, color: Colors.red),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Route "${settings.name}" not found',
-                        style: const TextStyle(fontSize: 18),
+                default:
+                  print('❌ Route not found: ${settings.name}');
+                  return MaterialPageRoute(
+                    builder: (context) => Scaffold(
+                      appBar: AppBar(
+                        title: const Text('Not Found'),
+                        backgroundColor: Colors.white,
                       ),
-                      const SizedBox(height: 24),
-                      ElevatedButton(
-                        onPressed: () => Navigator.pushReplacementNamed(context, '/home'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFE91E63),
+                      body: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                            const SizedBox(height: 16),
+                            Text(
+                              'Route "${settings.name}" not found',
+                              style: const TextStyle(fontSize: 18),
+                            ),
+                            const SizedBox(height: 24),
+                            ElevatedButton(
+                              onPressed: () => Navigator.pushReplacementNamed(context, '/home'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFFE91E63),
+                              ),
+                              child: const Text('Go Home'),
+                            ),
+                          ],
                         ),
-                        child: const Text('Go Home'),
                       ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-        }
-      },
+                    ),
+                  );
+              }
+            },
+          );
+        },
+      ),
     );
   }
 }
